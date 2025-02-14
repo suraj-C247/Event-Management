@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Event;
 use App\Http\Requests\EventRequest;
 use App\Http\Services\EventService;
+use Illuminate\Support\Facades\Lang;
 
 class EventController extends Controller
 {   
@@ -51,7 +52,7 @@ class EventController extends Controller
         // Delegate event creation to EventService
         $this->eventService->createEvent($request);
 
-        return redirect()->route('events.index')->with('success', 'Event created successfully.');
+        return redirect()->route('events.index')->with('success', Lang::get('messages.event_created'));
     }
 
     /**
@@ -64,15 +65,15 @@ class EventController extends Controller
 
         // If response is null, it means the link has expired
         if ($response === null) {
-            return redirect()->route('event.msg')->with('error', 'This link has expired. You have already responded to the event.');
+            return redirect()->route('event.msg')->with('error', Lang::get('messages.event_link_expired'));
         }
 
         // If response is false, the status is invalid
         if ($response === false) {
-            return redirect()->route('event.msg')->with('error', 'Something went wrong. Try later!');
+            return redirect()->route('event.msg')->with('error', Lang::get('messages.error_occurred'));
         }
 
-        return redirect()->route('event.msg')->with('success', 'Event response saved successfully');
+        return redirect()->route('event.msg')->with('success', Lang::get('messages.event_response'));
     }
 
     /**
