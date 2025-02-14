@@ -32,7 +32,6 @@ Route::get('event/response/msg', [EventController::class, 'respondMsg'])->name('
 
 //admin routes
 Route::middleware(['auth','admin'])->group(function () {
-    //Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/dashboard', function () {
         return view('dashboard');
     })->name('admin.dashboard');
