@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Models\User;
+use Illuminate\Support\Facades\Lang;
 
 class LoginRequest extends FormRequest
 {
@@ -47,7 +48,7 @@ class LoginRequest extends FormRequest
         // Check if user exists and is inactive
         if ($user && !$user->is_active) {
             throw ValidationException::withMessages([
-                'email' => 'Your account is inactive. Please contact support.',
+                'email' => Lang::get('inactive_account'),
             ]);
         }
 

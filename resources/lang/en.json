@@ -1,8 +1,10 @@
-{
+{   
+    "User":"User",
+    "Admin":"Admin",
     "User Dashboard": "User Dashboard",
     "Admin Dashboard": "Admin Dashboard",
-    "Users": "Users",
     "Events": "Events",
+    "Users": "Users",
     "Name": "Name",
     "Email": "Email",
     "Status": "Status",
@@ -23,7 +25,9 @@
     "Crop Image": "Crop Image",
     "Crop & Save": "Crop & Save",
     "Cancel": "Cancel",
+    "home_redirect":"Redirecting you to the home page",
     "user_status_change": "Are you sure to change the status of this user?",
+    "inactive_account": "Your account is inactive. Please contact support.",
     "event_created": "Event created successfully.",
     "event_response": "Event response saved successfully.",
     "event_link_expired": "This link has expired. You have already responded to the event.",
