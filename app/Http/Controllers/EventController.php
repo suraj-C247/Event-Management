@@ -52,7 +52,7 @@ class EventController extends Controller
         // Delegate event creation to EventService
         $this->eventService->createEvent($request);
 
-        return redirect()->route('events.index')->with('success', Lang::get('messages.event_created'));
+        return redirect()->route('events.index')->with('success', Lang::get('event_created'));
     }
 
     /**
@@ -65,15 +65,15 @@ class EventController extends Controller
 
         // If response is null, it means the link has expired
         if ($response === null) {
-            return redirect()->route('event.msg')->with('error', Lang::get('messages.event_link_expired'));
+            return redirect()->route('event.msg')->with('error', Lang::get('event_link_expired'));
         }
 
         // If response is false, the status is invalid
         if ($response === false) {
-            return redirect()->route('event.msg')->with('error', Lang::get('messages.error_occurred'));
+            return redirect()->route('event.msg')->with('error', Lang::get('error_occurred'));
         }
 
-        return redirect()->route('event.msg')->with('success', Lang::get('messages.event_response'));
+        return redirect()->route('event.msg')->with('success', Lang::get('event_response'));
     }
 
     /**

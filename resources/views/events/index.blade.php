@@ -5,7 +5,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight mb-2">
-        Events
+            {{ __('Events') }}
         </h2>
         <a href="{{ route('events.create') }}" class="px-3 py-2 bg-gray-500 text-white rounded">Create Event</a>
     </x-slot>
@@ -19,19 +19,19 @@
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                    <th class="px-6 py-3">Title</th>
-                    <th class="px-6 py-3">Date</th>
-                    <th class="px-6 py-3">Venue</th>
-                    <th class="px-6 py-3">Image</th>
+                    <th class="px-6 py-3">{{ __('Event Title') }}</th>
+                    <th class="px-6 py-3">{{ __('Event Date') }}</th>
+                    <th class="px-6 py-3">{{ __('Event Venue') }}</th>
+                    <th class="px-6 py-3">{{ __('Event Image') }}</th>
                     @if ($isAdmin)
-                        <th class="px-6 py-3">Created By </th>
+                        <th class="px-6 py-3">{{ __('Created By') }} </th>
                     @endif
                 </tr>
             </thead>
             <tbody class="border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
             @if($events->isEmpty())
                 <tr>
-                    <td class="px-6 py-4 text-center" colspan="4">No Records Found!</td>
+                    <td class="px-6 py-4 text-center" colspan="4">{{ __('no_records') }}</td>
                 </tr>
             @else
                 @foreach ($events as $event)
@@ -41,7 +41,7 @@
                             <td class="px-6 py-4">{{ $event->venue }}</td>
                             <td class="px-6 py-4"><img src="{{ asset('storage/events/' . $event->image) }}" width="100"></td>
                             @if ($isAdmin)
-                                <td class="px-6 py-4">{{ $event->user->name ?? 'Unknown' }}
+                                <td class="px-6 py-4">{{ $event->user->name}}
                                     @if ($event->user->role == 'admin')
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
