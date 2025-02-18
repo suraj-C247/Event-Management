@@ -82,4 +82,17 @@ class User extends Authenticatable
             $user->events()->delete();
         });
     }
+
+    public function subscription()
+    {
+        return $this->hasOne(Subscription::class);
+    }
+
+    /**
+     * Check if the user has an active subscription.
+     */
+    public function hasActiveSubscription()
+    {
+        return $this->subscription && $this->subscription->isActive();
+    }
 }

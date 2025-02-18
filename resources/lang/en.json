@@ -42,5 +42,21 @@
     "venue_maxlength": "Venue must be less than :number characters",
     "cropped_image_required": "Please crop and save the image before submitting",
     "error_occurred": "An error occurred. Please try again later.",
-    "no_records": "No Records Found!"
+    "no_records": "No Records Found!",
+    "Plans": "Plans",
+    "Plan Name": "Plan Name",
+    "Plan Price": "Plan Price", 
+    "Plan Type": "Plan Type",
+    "Plan Duration": "Plan Duration",
+    "Max Events": "Max Events",
+    "Plan Description": "Plan Description",
+    "plan_created": "Plan created successfully.",
+    "subscription_required": "You need an active subscription to create events.",   
+    "Choose a Subscription Plan": "Choose a Subscription Plan",
+    "Subscribe": "Subscribe",
+    "subscription_success": "Subscription successful!",
+    "subscription_error": "An error occurred while subscribing. Please try again.",
+    "subscription_cancelled": "Subscription was cancelled.",
+    "payment_failed": "Payment failed. Please try again.",
+    "plan_not_found": "Plan not found. Please contact support."
 }

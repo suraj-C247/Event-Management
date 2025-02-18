@@ -4,6 +4,7 @@
 
 return [
     // Global Constants
+    'currency' => 'USD',
     'pagination' => [
         'per_page' => 10, // Default pagination
     ],
