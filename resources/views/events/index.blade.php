@@ -7,7 +7,7 @@
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight mb-2">
             {{ __('Events') }}
         </h2>
-        <a href="{{ route('events.create') }}" class="px-3 py-2 bg-gray-500 text-white rounded">Create Event</a>
+        <a href="{{ route('events.create') }}" class="px-3 py-2 bg-gray-500 text-white rounded">{{ __('Create Event') }}</a>
     </x-slot>
     <!-- Check for success message -->
         @if (session('success'))
