@@ -31,6 +31,16 @@
     "event_created": "Event created successfully.",
     "event_response": "Event response saved successfully.",
     "event_link_expired": "This link has expired. You have already responded to the event.",
+    "image_size_error": "Image size must be less than :size MB.",
+    "event_date_error": "Event date must be at least :minutes minutes from now.",
+    "event_date_required": "Please select an event date",
+    "title_required": "Please enter a title",
+    "title_maxlength": "Title must be less than :number characters",
+    "description_required": "Please enter a description",
+    "description_maxlength": "Description must be less than :number characters",
+    "venue_required": "Please enter a venue",
+    "venue_maxlength": "Venue must be less than :number characters",
+    "cropped_image_required": "Please crop and save the image before submitting",
     "error_occurred": "An error occurred. Please try again later.",
     "no_records": "No Records Found!"
 }

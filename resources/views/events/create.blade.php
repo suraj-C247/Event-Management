@@ -65,7 +65,17 @@
     <script>
         window.appConfig = {
             eventDateMin: {{ config('global.event.date_min') }},
-            imageMaxSize: {{ config('global.event.image_max_size') }}
+            imageMaxSize: {{ config('global.event.image_max_size') }},
+            imageSizeErrorMsg: @json(__('image_size_error')),
+            eventDateErrorMsg: @json(__('event_date_error')),
+            eventDateRequiredMsg: @json(__('event_date_required')),
+            titleRequiredMsg: @json(__('title_required')),
+            titleMaxlengthMsg: @json(__('title_maxlength')),
+            descriptionRequiredMsg: @json(__('description_required')),
+            descriptionMaxlengthMsg: @json(__('description_maxlength')),
+            venueRequiredMsg: @json(__('venue_required')),
+            venueMaxlengthMsg: @json(__('venue_maxlength')),
+            cropImgRequiredMsg: @json(__('cropped_image_required')),
         };
     </script>
     <script src="{{ asset('js/event.js') }}"></script>

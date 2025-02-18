@@ -1,8 +1,10 @@
 
+
 // Image Cropper
 document.addEventListener('DOMContentLoaded', function () {
 
     const imageMaxSize = window.appConfig.imageMaxSize; // Get max image size in bytes
+    const imageSizeErrorMsg = window.appConfig.imageSizeErrorMsg;
 
     let cropper;
     let modal = document.getElementById('imageModal');
@@ -24,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to validate image file size
     function validateFileSize(file) {
         if (file.size > imageMaxSize) {
-            errorMessage.textContent = "Image size must be less than " + imageMaxSize / (1024 * 1024) + " MB.";
+            //errorMessage.textContent = "Image size must be less than " + imageMaxSize / (1024 * 1024) + " MB.";
+            errorMessage.textContent = imageSizeErrorMsg.replace(':size', (imageMaxSize / (1024 * 1024)).toFixed(2));
             errorMessage.classList.add('text-red-500', 'text-sm'); // Add error styling
             imageInput.parentNode.appendChild(errorMessage);
             return false; // File too large
@@ -99,6 +102,15 @@ document.addEventListener('DOMContentLoaded', function () {
 $(document).ready(function() {
 
     const eventDateMin = window.appConfig.eventDateMin; // Get min event date minutes
+    const eventDateErrorMsg = window.appConfig.eventDateErrorMsg;
+    const eventDateRequiredMsg = window.appConfig.eventDateRequiredMsg;
+    const titleRequiredMsg = window.appConfig.titleRequiredMsg;
+    const titleMaxlengthMsg = window.appConfig.titleMaxlengthMsg;
+    const descriptionRequiredMsg = window.appConfig.descriptionRequiredMsg;
+    const descriptionMaxlengthMsg = window.appConfig.descriptionMaxlengthMsg;
+    const venueRequiredMsg = window.appConfig.venueRequiredMsg;
+    const venueMaxlengthMsg = window.appConfig.venueMaxlengthMsg;
+    const cropImgRequiredMsg = window.appConfig.cropImgRequiredMsg;
 
     // Initialize TinyMCE
     tinymce.init({
@@ -120,7 +132,7 @@ $(document).ready(function() {
         now.setMinutes(now.getMinutes() + eventDateMin); // Use dynamic min time from config
     
         return selectedDate >= now;
-    }, `Event date must be at least ${eventDateMin} minutes from now`);
+    }, eventDateErrorMsg.replace(':minutes', eventDateMin));
 
 
     var validator = $("#eventForm").validate({
@@ -154,23 +166,23 @@ $(document).ready(function() {
         },
         messages: {
             event_date: {
-                required: "Please select an event date",
-                eventDateFuture: `Event date must be at least ${eventDateMin} minutes from now`
+                required: eventDateRequiredMsg,
+                eventDateFuture: eventDateErrorMsg.replace(':minutes', eventDateMin)
             },
             title: {
-                required: "Please enter a title",
-                maxlength: "Title must be less than 50 characters"
+                required: titleRequiredMsg,
+                maxlength: titleMaxlengthMsg.replace(':number', 50)
             },
             description: {
-                required: "Please enter a description",
-                maxlength: "Description must be less than 500 characters"
+                required: descriptionRequiredMsg,
+                maxlength: descriptionMaxlengthMsg.replace(':number', 500)
             },
             venue: {
-                required: "Please enter a venue",
-                maxlength: "Venue must be less than 100 characters"
+                required: venueRequiredMsg,
+                maxlength: venueMaxlengthMsg.replace(':number', 100)
             },
             cropped_image: {
-                required: "Please crop and save the image before submitting"
+                required: cropImgRequiredMsg
             }
         },
         errorClass: "text-red-500 text-sm", // Error message styling
