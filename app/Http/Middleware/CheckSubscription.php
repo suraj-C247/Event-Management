@@ -15,9 +15,18 @@ class CheckSubscription
      */
     public function handle(Request $request, Closure $next): Response
     {   
-        if (!auth()->user()->hasActiveSubscription()) {
+        $user = auth()->user();
+
+        // Check if user has an active subscription
+        if ($user->role != 'admin' && !$user->hasActiveSubscription()) {
             return redirect()->route('subscription.plans')->with('error', Lang::get('subscription_required'));
         }
+
+        // Validate event creation limit
+        if ($user->role != 'admin' && !$user->canCreateEvent()) {
+            return redirect()->route('events.index')->with('error', Lang::get('event_limit_exceeded'));
+        }
+
         return $next($request);
     }
 }

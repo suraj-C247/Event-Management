@@ -6,7 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\EventController;   
 use App\Http\Controllers\Admin\PlanController;
 use App\Http\Controllers\SubscriptionController;
-
+use App\Http\Controllers\WebhookController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -33,6 +33,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
     Route::get('/subscription/success', [SubscriptionController::class, 'success'])->name('subscription.success');
     Route::get('/subscription/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
+    Route::get('/subscription/my-plan', [SubscriptionController::class, 'myPlan'])->name('subscription.myPlan');
+    Route::post('/subscription/cancel-my-plan', [SubscriptionController::class, 'cancelMyPlan'])->name('subscription.cancelMyPlan');
 });
 
 //event response route
@@ -51,5 +53,8 @@ Route::middleware(['auth','admin'])->group(function () {
     Route::get('/admin/plans/create', [PlanController::class, 'create'])->name('admin.plans.create');
     Route::post('/admin/plans', [PlanController::class, 'store'])->name('admin.plans.store');
 });
+
+//stripe webhook
+Route::post('/webhook/stripe', [WebhookController::class, 'handleWebhook'])->name('webhook.stripe')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]); // Disable CSRF token verification for webhook
 
 require __DIR__.'/auth.php';

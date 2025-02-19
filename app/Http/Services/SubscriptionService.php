@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Lang;
+use Stripe\Subscription as StripeSubscription;
+
 class SubscriptionService
 {
     /**
@@ -47,13 +49,12 @@ class SubscriptionService
                 ]],
                 'mode' => 'subscription',
                 'metadata' => [
-                    'plan_id' => $plan->id 
+                    'plan_id' => $plan->id,
+                    'user_id' => Auth::id(),
                 ],
                 'success_url' => route('subscription.success') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('subscription.cancel'),
             ]);
-
-            Log::info('Stripe Checkout Session: ' . $session);
 
             return ['status' => true, 'url' => $session->url];
         } catch (Exception $e) {
@@ -62,94 +63,37 @@ class SubscriptionService
         }
     }
 
-    public function handleSuccess($sessionId)
+    /**
+     * Cancel the user's current subscription plan.
+     */
+    public function cancelSubscription($user)
     {
         try {
+            // Get active subscription
+            $subscription = $user->subscription;
+
+            if (!$subscription || !$subscription->isActive()) {
+                return ['success' => false, 'message' => Lang::get('subscription_not_found')];
+            }
+
+            // Initialize Stripe
             Stripe::setApiKey(config('services.stripe.secret'));
-            $session = \Stripe\Checkout\Session::retrieve($sessionId);
 
-            if (!$session) {
-                return ['status' => false, 'message' => Lang::get('subscription_error')];
-            }
+            // Cancel Stripe Subscription
+            $stripeSubscription = StripeSubscription::retrieve($subscription->stripe_subscription_id);
+            $stripeSubscription->cancel();
 
-            // Retrieve plan_id from Stripe metadata
-            $planId = $session->metadata->plan_id;
-            $plan = Plan::find($planId);
-            if (!$plan) {
-                return ['status' => false, 'message' => Lang::get('plan_not_found')];
-            }
-
-            // Retrieve subscription details from Stripe
-            $stripeSubscription = \Stripe\Subscription::retrieve($session->subscription);
-
-            $userId = Auth::id();
-            $existingSubscription = Subscription::where('user_id', $userId)->first();
-
-            if ($existingSubscription) {
-                // Update current subscription instead of creating a new one
-                $existingSubscription->update([
-                    'user_id' => $userId,
-                    'plan_name' => $plan->name,
-                    'plan_price' => $plan->price,
-                    'plan_type' => $plan->type,
-                    'plan_duration' => $plan->duration,
-                    'max_events' => $plan->max_events,
-                    'starts_at' => now(),
-                    'ends_at' => now()->addDays($this->getPlanDuration($plan->type)),
-                    'stripe_session_id' => $session->id,
-                    'stripe_subscription_id' => $session->subscription,
-                    'status' => $stripeSubscription->status,
-                ]);
-    
-                return ['status' => true, 'message' => Lang::get('subscription_updated')];
-            } else {
-
-                // Create a new subscription if none exists
-                Subscription::create([
-                    'user_id' => Auth::id(),    
-                    'plan_name' => $plan->name,
-                    'plan_price' => $plan->price,
-                    'plan_type' => $plan->type,
-                    'plan_duration' => $plan->duration,
-                    'max_events' => $plan->max_events,
-                    'starts_at' => now(),
-                    'ends_at' => now()->addDays($this->getPlanDuration($plan->type)),
-                    'stripe_session_id' => $session->id,
-                    'stripe_subscription_id' => $session->subscription,
-                    'status' => $stripeSubscription->status,
-                ]);
-            }
-
-            SubscriptionHistory::create([
-                'user_id' => Auth::id(),    
-                'plan_name' => $plan->name,
-                'plan_price' => $plan->price,
-                'plan_type' => $plan->type,
-                'plan_duration' => $plan->duration,
-                'max_events' => $plan->max_events,
-                'starts_at' => now(),
-                'ends_at' => now()->addDays($this->getPlanDuration($plan->type)),
-                'stripe_session_id' => $session->id,
-                'stripe_subscription_id' => $session->subscription,
-                'status' => $stripeSubscription->status,
+            // Update Subscription Status in Database
+            $subscription->update([
+                'status' => 'canceled',
+                //'ends_at' => now(), // Mark as ended
             ]);
 
-            return ['status' => true, 'message' => Lang::get('subscription_success')];    
-        } catch (Exception $e) {
-            Log::error('Subscription Success Error: ' . $e->getMessage());
-            return ['status' => false, 'message' => Lang::get('subscription_error')];
+            return ['success' => true, 'message' => Lang::get('subscription_canceled')];
+        } catch (\Exception $e) {
+            Log::error('Subscription cancellation failed: ' . $e->getMessage());
+            return ['success' => false, 'message' => Lang::get('subscription_cancel_error')];
         }
-    }
-
-    private function getPlanDuration($planType)
-    {
-        return match ($planType) {
-            'day' => 1,
-            'week' => 7,
-            'month' => 30,
-            'year' => 365,
-            default => 1
-        };
     }
 
 }

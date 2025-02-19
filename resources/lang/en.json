@@ -58,5 +58,12 @@
     "subscription_error": "An error occurred while subscribing. Please try again.",
     "subscription_cancelled": "Subscription was cancelled.",
     "payment_failed": "Payment failed. Please try again.",
-    "plan_not_found": "Plan not found. Please contact support."
+    "plan_not_found": "Plan not found.",
+    "user_not_found": "User not found.",
+    "webhook_processed": "Webhook processed",
+    "subscription_not_found": "Subscription not found",
+    "subscription_renewed": "Subscription renewed successfully",
+    "subscription_canceled": "Subscription canceled successfully",
+    "subscription_cancel_error": "Failed to cancel subscription.",
+    "event_limit_exceeded": "You have reached the maximum number of events for your subscription."
 }

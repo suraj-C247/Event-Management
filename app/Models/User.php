@@ -95,4 +95,33 @@ class User extends Authenticatable
     {
         return $this->subscription && $this->subscription->isActive();
     }
+
+    /**
+     * Check if the user can create an event based on their subscription.
+     */
+    public function canCreateEvent()
+    {
+        if (!$this->hasActiveSubscription()) {
+            return false;
+        }
+
+        $subscription = $this->subscription;
+        $maxEvents = $subscription->max_events;
+
+        if (!$maxEvents) {
+            return true; // No limit set
+        }
+
+        return $this->eventCountWithinSubscription() < $maxEvents;
+    }
+
+    /**
+     * Get the count of events created within the subscription period.
+     */
+    public function eventCountWithinSubscription()
+    {
+        return $this->events()
+            ->whereBetween('created_at', [$this->subscription->starts_at, $this->subscription->ends_at])
+            ->count();
+    }
 }

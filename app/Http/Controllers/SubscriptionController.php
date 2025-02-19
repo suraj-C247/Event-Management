@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;   
 use Illuminate\Support\Facades\Lang;
+
 class SubscriptionController extends Controller
 {
     protected $subscriptionService;
@@ -45,13 +46,7 @@ class SubscriptionController extends Controller
      */
     public function success(Request $request): RedirectResponse
     {   
-        $result = $this->subscriptionService->handleSuccess($request->session_id);
-        
-        if ($result['status']) {
-            return redirect()->route('dashboard')->with('success', $result['message']);
-        }
-
-        return redirect()->route('dashboard')->with('error', $result['message']);
+        return redirect()->route('dashboard')->with('error', Lang::get('subscription_success'));
     }
 
     /**
@@ -61,4 +56,23 @@ class SubscriptionController extends Controller
     {
         return redirect()->route('dashboard')->with('error', Lang::get('subscription_cancelled'));
     }
+
+    /**
+     * Show the user's current subscription plan.
+     */
+    public function myPlan(): View
+    {
+        $subscription = auth()->user()->subscription;
+        return view('subscriptions.my-plan', compact('subscription'));
+    }
+
+    /**
+     * Cancel the user's current subscription plan.
+     */
+    public function cancelMyPlan(Request $request): JsonResponse
+    {
+        $result = $this->subscriptionService->cancelSubscription(auth()->user());
+        return response()->json($result);
+    }
+    
 }
