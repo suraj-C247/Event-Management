@@ -23,7 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'is_active'
+        'is_active',
+        'stripe_customer_id',
     ];
 
     /**
@@ -83,9 +84,12 @@ class User extends Authenticatable
         });
     }
 
-    public function subscription()
+    /**
+     * Get the latest subscription for the user.
+     */
+    public function latestSubscription()
     {
-        return $this->hasOne(Subscription::class);
+        return $this->hasOne(Subscription::class)->latest('created_at');
     }
 
     /**
@@ -93,7 +97,8 @@ class User extends Authenticatable
      */
     public function hasActiveSubscription()
     {
-        return $this->subscription && $this->subscription->isActive();
+        $subscription = $this->latestSubscription;
+        return $subscription && $subscription->isActive();
     }
 
     /**
@@ -105,7 +110,7 @@ class User extends Authenticatable
             return false;
         }
 
-        $subscription = $this->subscription;
+        $subscription = $this->latestSubscription;
         $maxEvents = $subscription->max_events;
 
         if (!$maxEvents) {
@@ -121,7 +126,7 @@ class User extends Authenticatable
     public function eventCountWithinSubscription()
     {
         return $this->events()
-            ->whereBetween('created_at', [$this->subscription->starts_at, $this->subscription->ends_at])
+            ->whereBetween('created_at', [$this->latestSubscription->starts_at, $this->latestSubscription->ends_at])
             ->count();
     }
 }

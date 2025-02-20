@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('name', length: 100); 
             $table->decimal('price', 8, 2); 
             $table->enum('type', ['day', 'week', 'month', 'year']);
-            $table->mediumInteger('duration');
+            $table->smallInteger('duration');
             $table->text('description');
-            $table->mediumInteger('max_events');
+            $table->smallInteger('max_events');
             $table->boolean('is_active')->default(true);
-            $table->string('stripe_price_id')->nullable();
+            $table->string('stripe_price_id', length: 100)->nullable();
             $table->timestamps();
         });
     }

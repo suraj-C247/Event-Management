@@ -46,7 +46,18 @@ class SubscriptionController extends Controller
      */
     public function success(Request $request): RedirectResponse
     {   
-        return redirect()->route('dashboard')->with('error', Lang::get('subscription_success'));
+        $plan = $this->subscriptionService->handleSuccess($request->session_id);
+
+        // Store subscription data in session
+        session()->flash('plan_data', [
+            'plan_name' => $plan->name,
+            'plan_price' => $plan->price,
+            'plan_type' => $plan->type,
+            'plan_duration' => $plan->duration,
+            'max_events' => $plan->max_events,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', Lang::get('subscription_success'));
     }
 
     /**
@@ -62,7 +73,7 @@ class SubscriptionController extends Controller
      */
     public function myPlan(): View
     {
-        $subscription = auth()->user()->subscription;
+        $subscription = auth()->user()->latestSubscription;
         return view('subscriptions.my-plan', compact('subscription'));
     }
 
@@ -73,6 +84,20 @@ class SubscriptionController extends Controller
     {
         $result = $this->subscriptionService->cancelSubscription(auth()->user());
         return response()->json($result);
+    }
+
+    /**
+     * Upgrade or Downgrade Subscription
+     */
+    public function changeSubscription(Request $request): JsonResponse
+    {
+        $response = $this->subscriptionService->changeSubscription($request->plan_id);
+
+        if (isset($response['error'])) {
+            return response()->json(['error' => $response['error']], 400);
+        }
+
+        return response()->json(['success' => $response['success']], 200);
     }
     
 }

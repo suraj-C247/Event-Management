@@ -65,5 +65,17 @@
     "subscription_renewed": "Subscription renewed successfully",
     "subscription_canceled": "Subscription canceled successfully",
     "subscription_cancel_error": "Failed to cancel subscription.",
-    "event_limit_exceeded": "You have reached the maximum number of events for your subscription."
+    "event_limit_exceeded": "You have reached the maximum number of events for your subscription.",
+    "My Plan": "My Plan",
+    "My Subscription": "My Subscription",
+    "no_active_subscription": "You do not have an active subscription.",
+    "Cancel Subscription": "Cancel Subscription",
+    "Start Date": "Start Date",
+    "End Date": "End Date",
+    "Subscription Details": "Subscription Details",
+    "No Subscription": "No Subscription",
+    "Upgrade Plan": "Upgrade Plan",
+    "Subscribe Now": "Subscribe Now",
+    "Change Plan": "Change Plan",
+    "subscription_updated": "Subscription updated successfully."
 }

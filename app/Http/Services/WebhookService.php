@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Subscription;
 use App\Models\Plan;
 use App\Models\User;
-use App\Models\SubscriptionHistory;
 use Stripe\Subscription as StripeSubscription;
 use Illuminate\Support\Facades\Lang;
 
@@ -61,8 +60,8 @@ class WebhookService
         // Retrieve Subscription details
         $stripeSubscription = StripeSubscription::retrieve($session->subscription);
 
-        // Prepare data for subscription
-        $data = [
+        // save the subscription
+        Subscription::create([
             'user_id' => $user->id,
             'plan_name' => $plan->name,
             'plan_price' => $plan->price,
@@ -71,23 +70,10 @@ class WebhookService
             'max_events' => $plan->max_events,
             'starts_at' => now(),
             'ends_at' => now()->addDays(getPlanDuration($plan->type)),
-            'stripe_session_id' => $session->id,
+            'stripe_price_id' => $plan->stripe_price_id,
             'stripe_subscription_id' => $session->subscription,
-            'status' => $stripeSubscription->status,
-        ];
-
-        // Check if user already has a subscription
-        $existingSubscription = Subscription::where('user_id', $user->id)->first();
-        if ($existingSubscription) {
-            // Extend existing subscription
-            $existingSubscription->update($data);
-        } else {
-            // Create a new subscription
-            Subscription::create($data);
-        }
-
-        // Create a new subscription history
-        SubscriptionHistory::create($data);
+            'status' => 'active',
+        ]);
 
         return response()->json(['message' => Lang::get('subscription_success')], 200);
     }
@@ -99,32 +85,25 @@ class WebhookService
     {
         $stripeSubscriptionId = $invoice->subscription;
 
-        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscriptionId)->first();
+        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscriptionId)->latest('created_at')->first();
         if (!$subscription) {
             Log::error('Subscription not found for Stripe Subscription ID: ' . $stripeSubscriptionId);
             return response()->json(['error' => Lang::get('subscription_not_found')], 404);
         }
 
-        // Update subscription status and extend end date
-        $subscription->update([
-            'starts_at' => now(),
-            'ends_at' => now()->parse($subscription->ends_at)->addDays(getPlanDuration($subscription->plan_type)),
-            'status' => 'active',
-        ]);
-
         // Create a new subscription history
-        SubscriptionHistory::create([
+        Subscription::create([
             'user_id' => $subscription->user_id,
             'plan_name' => $subscription->plan_name,
             'plan_price' => $subscription->plan_price,
             'plan_type' => $subscription->plan_type,
             'plan_duration' => $subscription->plan_duration,
             'max_events' => $subscription->max_events,
-            'starts_at' => now(),
+            'starts_at' => $subscription->ends_at,
             'ends_at' => now()->parse($subscription->ends_at)->addDays(getPlanDuration($subscription->plan_type)),
-            'stripe_session_id' => $invoice->id,
+            'stripe_price_id' => $subscription->stripe_price_id,
             'stripe_subscription_id' => $invoice->subscription,
-            'status' => $invoice->status,
+            'status' => 'active',
         ]);
 
         return response()->json(['message' => Lang::get('subscription_renewed')], 200);
@@ -138,7 +117,7 @@ class WebhookService
         $stripeSubscriptionId = $subscriptionData->id;
 
         // Find the subscription in our database
-        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscriptionId)->first();
+        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscriptionId)->latest('created_at')->first();
         if (!$subscription) {
             Log::error('Subscription not found for Stripe Subscription ID: ' . $stripeSubscriptionId);
             return response()->json(['error' => Lang::get('subscription_not_found')], 404);

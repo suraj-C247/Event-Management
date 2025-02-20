@@ -54,10 +54,12 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-
-                        <x-dropdown-link :href="route('subscription.myPlan')">
-                            {{ __('My Plan') }}
-                        </x-dropdown-link>
+                        
+                        @if(auth()->user()->role == 'user')
+                            <x-dropdown-link :href="route('subscription.myPlan')">
+                                {{ __('My Plan') }}
+                            </x-dropdown-link>
+                        @endif
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">

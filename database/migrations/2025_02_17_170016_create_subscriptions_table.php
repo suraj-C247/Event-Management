@@ -17,13 +17,13 @@ return new class extends Migration
             $table->string('plan_name', length: 100); 
             $table->decimal('plan_price', 8, 2); 
             $table->enum('plan_type', ['day', 'week', 'month', 'year']);
-            $table->mediumInteger('plan_duration'); 
-            $table->mediumInteger('max_events');
+            $table->smallInteger('plan_duration'); 
+            $table->smallInteger('max_events');
             $table->timestamp('starts_at');
             $table->timestamp('ends_at');
-            $table->string('stripe_session_id')->nullable();
-            $table->string('stripe_subscription_id')->nullable();
-            $table->string('status')->default('pending', length: 50);
+            $table->string('stripe_price_id', length: 100)->nullable();
+            $table->string('stripe_subscription_id', length: 100)->nullable();
+            $table->string('status', length: 50)->default('pending');
             $table->timestamps();
         });
     }

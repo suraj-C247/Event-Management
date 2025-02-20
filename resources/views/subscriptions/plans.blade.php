@@ -11,9 +11,15 @@
                 <form action="" method="POST" class="bg-white p-6 shadow-lg rounded-lg border text-center">
                     <h3 class="text-lg font-semibold mb-2">{{ $plan->name }}</h3>
                     <p class="text-gray-600 font-medium">{{ $plan->price }} {{ config('global.currency') }} / {{ ucfirst($plan->type) }} <br> {{ $plan->max_events }} {{ __('Max Events') }}</p>
-                    <button type="button" class="mt-4 w-full bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition" onclick="checkout({{ $plan->id }})">
+                    @if(auth()->user()->hasActiveSubscription() == false)
+                        <button type="button" class="mt-4 w-full bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition" onclick="checkout({{ $plan->id }})">
                         {{ __('Subscribe') }}
                     </button>
+                    @else
+                        <button type="button" class="mt-4 w-full bg-gray-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-600 transition" onclick="changeSubscription({{ $plan->id }})">
+                            {{ __('Change Plan') }}
+                        </button>
+                    @endif
                 </form>
             @endforeach
         </div>
@@ -36,6 +42,28 @@
                     window.location.href = data.checkout_url;
                 } else {
                     alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function changeSubscription(planId) {
+            fetch("{{ route('subscription.change') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ plan_id: planId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('change subscription data', data);
+                if (data.success) {
+                    alert(data.success);
+                    window.location.href = "{{ route('dashboard') }}";
+                } else {
+                    alert(data.error);
                 }
             })
             .catch(error => console.error('Error:', error));
