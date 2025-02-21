@@ -60,6 +60,18 @@ class WebhookService
         // Retrieve Subscription details
         $stripeSubscription = StripeSubscription::retrieve($session->subscription);
 
+        // Attach payment method to customer if available
+        if (!empty($session->payment_intent)) {
+            $paymentIntent = \Stripe\PaymentIntent::retrieve($session->payment_intent);
+            if (!empty($paymentIntent->payment_method)) {
+                \Stripe\Customer::update($user->stripe_customer_id, [
+                    'invoice_settings' => [
+                        'default_payment_method' => $paymentIntent->payment_method
+                    ]
+                ]);
+            }
+        }
+
         // save the subscription
         Subscription::create([
             'user_id' => $user->id,

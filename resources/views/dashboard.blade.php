@@ -37,7 +37,7 @@
                     </div>
                 @endif
 
-                @if(auth()->user()->role === 'user')
+                @if(auth()->user()->role === 'user' && !session('plan_data'))
                     @if(isset($subscription) && $subscription)
                         <div class="bg-green-100 p-4 rounded-md shadow-md">
                             <h2 class="text-lg font-bold">{{ __('Current Subscription') }}</h2>

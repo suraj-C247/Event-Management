@@ -142,6 +142,11 @@ class SubscriptionService
         try {
             $user = Auth::user();
             $currentSubscription = $user->latestSubscription;
+
+            if (!$user->stripe_customer_id) {
+                throw new Exception(__('Stripe customer ID is missing.'));
+            }
+
             if (!$currentSubscription || !$currentSubscription->isActive()) {
                 throw new Exception(__('No active subscription found.'));
             }
@@ -149,6 +154,12 @@ class SubscriptionService
             $newPlan = Plan::find($newPlanId);
             if (!$newPlan) {
                 throw new Exception(__('Invalid plan selected.'));
+            }
+
+            $customer = \Stripe\Customer::retrieve($user->stripe_customer_id);
+            // Check if a default payment method exists
+            if (empty($customer->invoice_settings->default_payment_method)) {
+                throw new Exception(__('No payment method found. Please add a payment method first.'));
             }
 
             // Cancel current subscription immediately
