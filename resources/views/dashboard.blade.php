@@ -1,7 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Dashboard') }}
+            @if(auth()->user()->role === 'admin')
+                {{ __('Admin Dashboard') }}
+            @else
+                {{ __('User Dashboard') }}
+            @endif
         </h2>
     </x-slot>
 
